@@ -8,6 +8,7 @@ public class ClickMove : MonoBehaviour
 {
     private new Camera camera;
     private NavMeshAgent agent;
+    private Animator anim;
 
     private bool isMove;
     private Vector3 destination;
@@ -18,6 +19,11 @@ public class ClickMove : MonoBehaviour
         camera = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
+    }
+
+    private void Start()
+    {
+        anim = character.GetComponent<Animator>();    
     }
 
     void Update()
@@ -46,12 +52,14 @@ public class ClickMove : MonoBehaviour
         if (agent.velocity.magnitude == 0f)
         {
             isMove = false;
+            anim.SetBool("Move", false);
             return;
         }
         if (isMove)
         {
             var dir = new Vector3(agent.steeringTarget.x, transform.position.y, agent.steeringTarget.z) - transform.position;
             character.transform.forward = dir;
+            anim.SetBool("Move", true);
             //transform.position += dir.normalized * Time.deltaTime * 5f;
         }
 
