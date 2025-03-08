@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TextCore.Text;
@@ -5,6 +7,7 @@ using UnityEngine.TextCore.Text;
 public class ClickMove : MonoBehaviour
 {
     private new Camera camera;
+    private NavMeshAgent agent;
 
     private bool isMove;
     private Vector3 destination;
@@ -13,6 +16,8 @@ public class ClickMove : MonoBehaviour
     private void Awake()
     {
         camera = Camera.main;
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
     }
 
     void Update()
@@ -26,28 +31,29 @@ public class ClickMove : MonoBehaviour
             }
         }
 
-        Move();
+        LookMoveDirection();
     }
 
     private void SetDestination(Vector3 dest)
     {
+        agent.SetDestination(dest);
         destination = dest;
         isMove = true;
     }
 
-    private void Move()
+    private void LookMoveDirection()
     {
+        if (agent.velocity.magnitude == 0f)
+        {
+            isMove = false;
+            return;
+        }
         if (isMove)
         {
-            if (Vector3.Distance(destination, transform.position) <= 0.1f)
-            {
-                isMove = false;
-                return;
-            }
-
-            var dir = destination - transform.position;
+            var dir = new Vector3(agent.steeringTarget.x, transform.position.y, agent.steeringTarget.z) - transform.position;
             character.transform.forward = dir;
-            transform.position += dir.normalized * Time.deltaTime * 5f;
+            //transform.position += dir.normalized * Time.deltaTime * 5f;
         }
+
     }
 }
