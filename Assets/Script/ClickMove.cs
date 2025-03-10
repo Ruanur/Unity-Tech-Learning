@@ -16,6 +16,11 @@ public class ClickMove : MonoBehaviour
     //캐릭터 목표 위치 기억
     private Vector3 destination;
 
+    bool isAttackDelay;
+    float AttackDelay;
+    M1 equipWeapon;
+
+    
     private void Awake()
     {
         camera = Camera.main;
@@ -41,6 +46,7 @@ public class ClickMove : MonoBehaviour
         }
 
         LookMoveDirection();
+        Attack();
     }
 
     //클릭으로 찾아낸 마우스의 위치를 저장 후 이동을 시작하게 하는 역할 수행, Nav 시스템 활용
@@ -71,5 +77,18 @@ public class ClickMove : MonoBehaviour
             //transform.position += dir.normalized * Time.deltaTime * 5f;
         }
 
+    }
+
+    void Attack()
+    {
+        AttackDelay += Time.deltaTime;
+        isAttackDelay = equipWeapon.rate < AttackDelay;
+
+        if (Input.GetMouseButton(0))
+        {
+            equipWeapon.Use();
+            anim.SetTrigger("doSwing");
+            AttackDelay = 0;
+        }
     }
 }
